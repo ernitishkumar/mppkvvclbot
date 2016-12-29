@@ -1,6 +1,6 @@
 package com.mppkvvclbot.dictionary.mongo.beans;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
 
 public class MongoUser {
 	@Id

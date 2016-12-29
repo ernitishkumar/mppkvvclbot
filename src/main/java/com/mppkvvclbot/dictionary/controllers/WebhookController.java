@@ -2,7 +2,6 @@ package com.mppkvvclbot.dictionary.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Hp on 29-12-2016.
  */
 @Configuration
-@RestController
+@RestController(value = "")
 public class WebhookController {
 
-    @Value("$VERIFY_TOKEN")
+    @Value("${VERIFY_TOKEN}")
     private String VERIFY_TOKEN = "";
 
     @RequestMapping(value = "/webhook",method = RequestMethod.GET)
@@ -24,6 +23,7 @@ public class WebhookController {
         System.out.println("Recieved hub.mode is: "+hubMode);
         System.out.println("Recieved hub.verify_token is: "+hubToken);
         if(hubMode != null && hubMode.equalsIgnoreCase("subscribe")){
+            System.out.println("Verifying with token: "+VERIFY_TOKEN);
             if(hubToken != null && hubToken.equals(VERIFY_TOKEN)){
                 System.out.println("Webhook verified successfully");
                 return hubChallenge;
