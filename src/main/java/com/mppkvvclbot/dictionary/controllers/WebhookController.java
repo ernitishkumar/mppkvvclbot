@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Hp on 29-12-2016.
  */
 @Configuration
-@RestController(value = "")
+@RequestMapping(value = "/facebook")
 public class WebhookController {
 
     @Value("${VERIFY_TOKEN}")
