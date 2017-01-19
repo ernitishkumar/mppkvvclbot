@@ -3,6 +3,8 @@ package com.mppkvvclbot.dictionary.controllers;
 import com.mppkvvclbot.dictionary.beans.Payload;
 import com.mppkvvclbot.dictionary.services.DictionaryService;
 import org.jcp.xml.dsig.internal.SignerOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,8 @@ import java.util.Map;
 @Configuration
 @RequestMapping(value = "/facebook")
 public class WebhookController {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebhookController.class);
 
     @Value("${VERIFY_TOKEN}")
     private String VERIFY_TOKEN = "";
@@ -55,8 +59,8 @@ public class WebhookController {
     @RequestMapping(value = "/webhook",method = RequestMethod.POST,consumes = "application/json")
     @ResponseBody
     public ResponseEntity recieveMessage(@RequestBody Payload payload){
-        System.out.println("POST Webhook started by facebook");
-        dictionaryService.fetchMeaning("cricket");
-        return new ResponseEntity("Recieved Fine",HttpStatus.OK);
+        logger.info("POST Webhook started by facebook");
+        dictionaryService.fetchMeaning(payload);
+        return new ResponseEntity("Message Delivered",HttpStatus.OK);
     }
 }
