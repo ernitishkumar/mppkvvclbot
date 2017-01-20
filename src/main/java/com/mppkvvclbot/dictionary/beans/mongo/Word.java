@@ -1,12 +1,14 @@
 package com.mppkvvclbot.dictionary.beans.mongo;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
 /**
  * Created by NITISH on 19-01-2017.
  */
+@Document(collection = "words")
 public class Word implements Serializable {
 
     @Id

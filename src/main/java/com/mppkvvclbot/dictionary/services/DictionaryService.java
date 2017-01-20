@@ -2,6 +2,7 @@ package com.mppkvvclbot.dictionary.services;
 
 import com.mppkvvclbot.dictionary.beans.facebook.Entry;
 import com.mppkvvclbot.dictionary.beans.facebook.Payload;
+import com.mppkvvclbot.dictionary.beans.facebook.RecievedMessage;
 import com.mppkvvclbot.dictionary.beans.meaning.Meaning;
 import com.mppkvvclbot.dictionary.beans.mongo.Word;
 import com.mppkvvclbot.dictionary.repositories.MeaningRepository;
@@ -31,25 +32,22 @@ public class DictionaryService{
     @Value("${DICTIONARY_API}")
     private String DICTIONARY_API = "";
 
+    @Value("${API_FOR_REPLY}")
+    private String REPLY_API = "";
+
     public void fetchMeaning(Payload payload){
         logger.info("Queuing payload");
-        if(payload != null){
-            Entry firstEntry = payload.getEntry().get(0);
-            if(firstEntry != null){
-                logger.info("First Entry is: "+firstEntry.toString());
-                String word = firstEntry.getMessaging().get(0).getMessage().getText();
-                logger.info("Recieved word from fb is: "+word);
-                Word wordInDatabase = wordRepository.findByWord(word);
-                if(wordInDatabase != null){
-                    logger.info(wordInDatabase.getWord()+" is present in db. Fetching meaning from db");
-                    List<Meaning> meaningList = meaningRepository.findByWordId(wordInDatabase.getId());
-                }else{
-                    logger.info(word+" is not present in db. Fetching meaning from web");
-                    MeaningWorker meaningWorker = new MeaningWorker(payload,DICTIONARY_API);
-                    Thread thread = new Thread(meaningWorker);
-                    thread.start();
-                }
-            }
+        MeaningWorker meaningWorker = new MeaningWorker(this,wordRepository,meaningRepository,payload,DICTIONARY_API);
+        logger.info("Starting new worker thread for dictionary task");
+        Thread thread = new Thread(meaningWorker);
+        thread.start();
+        logger.info("Worker thread started successfully sending response to facebook..");
+    }
+
+    public void sendMeaning(Payload payloadd,Word word,List<Meaning> meanings){
+        logger.info("Sending Meaning to user");
+        if(payloadd != null && word != null && meanings != null){
+
         }
     }
 }
