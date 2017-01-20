@@ -1,4 +1,4 @@
-package com.mppkvvclbot.dictionary.beans;
+package com.mppkvvclbot.dictionary.beans.meaning;
 
 import java.io.Serializable;
 import java.util.List;

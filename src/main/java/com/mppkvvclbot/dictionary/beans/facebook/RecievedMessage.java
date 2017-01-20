@@ -1,7 +1,4 @@
-package com.mppkvvclbot.dictionary.beans;
-
-import com.sun.corba.se.impl.protocol.giopmsgheaders.*;
-import com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages_zh_CN;
+package com.mppkvvclbot.dictionary.beans.facebook;
 
 import java.io.Serializable;
 
@@ -16,7 +13,7 @@ public class RecievedMessage implements Serializable{
 
     private String timestamp;
 
-    private Message message;
+    private com.mppkvvclbot.dictionary.beans.facebook.Message message;
 
     public Sender getSender() {
         return sender;
@@ -42,18 +39,18 @@ public class RecievedMessage implements Serializable{
         this.timestamp = timestamp;
     }
 
-    public Message getMessage() {
+    public com.mppkvvclbot.dictionary.beans.facebook.Message getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(com.mppkvvclbot.dictionary.beans.facebook.Message message) {
         this.message = message;
     }
 
     public RecievedMessage() {
     }
 
-    public RecievedMessage(Sender sender, Recipient recipient, String timestamp, Message message) {
+    public RecievedMessage(Sender sender, Recipient recipient, String timestamp, com.mppkvvclbot.dictionary.beans.facebook.Message message) {
         this.sender = sender;
         this.recipient = recipient;
         this.timestamp = timestamp;

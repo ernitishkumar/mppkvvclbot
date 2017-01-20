@@ -1,4 +1,4 @@
-package com.mppkvvclbot.dictionary.beans;
+package com.mppkvvclbot.dictionary.beans.facebook;
 
 import java.io.Serializable;
 

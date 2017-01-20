@@ -1,6 +1,4 @@
-package com.mppkvvclbot.dictionary.beans;
-
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+package com.mppkvvclbot.dictionary.beans.facebook;
 
 import java.util.List;
 

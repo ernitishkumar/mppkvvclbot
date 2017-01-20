@@ -1,8 +1,8 @@
 package com.mppkvvclbot.dictionary.controllers;
 
-import com.mppkvvclbot.dictionary.beans.Payload;
+import com.mppkvvclbot.dictionary.beans.facebook.Payload;
 import com.mppkvvclbot.dictionary.services.DictionaryService;
-import org.jcp.xml.dsig.internal.SignerOutputStream;
+import com.mppkvvclbot.dictionary.workers.MeaningWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * Created by Hp on 29-12-2016.
