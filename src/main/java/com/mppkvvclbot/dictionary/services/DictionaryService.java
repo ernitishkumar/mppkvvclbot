@@ -31,6 +31,8 @@ public class DictionaryService{
 
     private static final Logger logger = LoggerFactory.getLogger(DictionaryService.class);
 
+    private static final OkHttpClient client = new OkHttpClient();
+
     @Autowired
     private WordRepository wordRepository;
 
@@ -62,16 +64,15 @@ public class DictionaryService{
             if(sender != null){
                 ReplyPayload replyPayload = new ReplyPayload();
                 replyPayload.setRecipient(sender);
-                String reply = getReplyText(meanings);
+                String reply = getReplyText(meanings,word.getWord());
                 if(reply.length() > 320){
                     logger.info("Reply length is greater than 320.Trimming to 320 :( ");
                     reply = reply.substring(0,320);
                 }
                 logger.info("Sending Reply from meaning as: \n"+reply);
                 ReplyMessage message = new ReplyMessage();
-                message.setText("Hello World");
+                message.setText(reply);
                 replyPayload.setMessage(message);
-
                 logger.info("Sending payload as: "+replyPayload);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = "";
@@ -81,10 +82,6 @@ public class DictionaryService{
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                /*String url = REPLY_API+PAGE_ACCESS_TOKEN;
-                logger.info(url);
-*/
-                OkHttpClient client = new OkHttpClient();
                 try {
                     HttpUrl.Builder urlBuilder = HttpUrl.parse(REPLY_API).newBuilder();
                     urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
@@ -97,29 +94,68 @@ public class DictionaryService{
                             .post(body)
                             .build();
                     Response response = client.newCall(request).execute();
+                    response.close();
                     logger.info(response.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                /*HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                HttpEntity<String> postEntity = new HttpEntity<String>(json, headers);
-                RestTemplate restTemplate = new RestTemplate();
-                URI uri = URI.create(REPLY_API+PAGE_ACCESS_TOKEN);
-                //URI uri = URI.create("http://localhost:8080/dwls/backend/test");
-                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,postEntity,String.class);
-                //restTemplate.postForLocation(uri,postEntity);*/
+            }
+        }
+    }
+
+    public void sendErrorMessage(Payload payload,String reply){
+        logger.info("Sending Error Message to user");
+        if(payload != null && reply != null){
+            Sender sender = payload.getEntry().get(0).getMessaging().get(0).getSender();
+            if(sender != null){
+                ReplyPayload replyPayload = new ReplyPayload();
+                replyPayload.setRecipient(sender);
+                if(reply.length() > 320){
+                    logger.info("Reply length is greater than 320.Trimming to 320 :( ");
+                    reply = reply.substring(0,320);
+                }
+                ReplyMessage message = new ReplyMessage();
+                message.setText(reply);
+                replyPayload.setMessage(message);
+                logger.info("Sending payload as: "+replyPayload);
+                ObjectMapper mapper = new ObjectMapper();
+                String json = "";
+                try {
+                    json = mapper.writeValueAsString(replyPayload);
+                    System.out.println(json);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(REPLY_API).newBuilder();
+                    urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
+                    String url = urlBuilder.build().toString();
+                    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
+                    logger.info("Sending body as");
+                    logger.info(""+body.contentLength());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    response.close();
+                    logger.info(response.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
     }
 
-    public String getReplyText(List<Meaning> meanings){
+    public String getReplyText(List<Meaning> meanings,String word){
         String reply = "";
         if(meanings != null && meanings.size() > 0){
             logger.info("Forming Single Text Reply from meanings on Thread: "+Thread.currentThread().getName());
             StringBuffer stringBuffer = new StringBuffer();
             int counter = 1;
+            stringBuffer.append("Meanings of word: "+word+" are:");
+            stringBuffer.append(System.lineSeparator());
             for(Meaning meaning : meanings){
                 stringBuffer.append(counter+++". ");
                 stringBuffer.append(meaning.getText().trim());

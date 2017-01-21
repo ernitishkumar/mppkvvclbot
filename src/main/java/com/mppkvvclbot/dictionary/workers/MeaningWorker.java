@@ -99,45 +99,66 @@ public class MeaningWorker implements Runnable {
                             String word = recievedMessage.getMessage().getText().toLowerCase();
                             logger.info("Recieved word from fb is: " + word);
                             if (word != null) {
-                                word = word.toLowerCase();
-                                Word wordInDatabase = wordRepository.findByWord(word);
-                                if (wordInDatabase != null) {
-                                    logger.info(wordInDatabase.getWord() + " is present in db. Fetching meaning from db");
-                                    List<Meaning> meaningList = meaningRepository.findByWordId(wordInDatabase.getId());
-                                    if(meaningList != null ){
-                                        logger.info("Found "+meaningList.size()+" for word: "+word+" in database");
-                                        logger.info("Calling dictionary service to send meaning to user");
-                                        dictionaryService.sendMeaning(payload,wordInDatabase,meaningList);
-                                    }
-                                } else {
-                                    logger.info(word + " is not present in db. Fetching meaning from web");
-                                    RestTemplate restTemplate = new RestTemplate();
-                                    DictionaryResponse dictionaryResponse = restTemplate.getForObject(dictionaryUrl + word, DictionaryResponse.class);
-                                    logger.info("Recieved meaning from web..proceeding..");
-                                    if (dictionaryResponse != null) {
-                                        List<DictionaryTuc> tucs = dictionaryResponse.getTuc();
-                                        if (tucs != null && tucs.size() > 0) {
-                                            List<Meaning> meanings = tucs.get(0).getMeanings();
-                                            if (meanings != null && meanings.size() > 0) {
-                                                logger.info("Recieved Meaning of word: " + word + " is not null inserting in database");
-                                                Word databaseWord = new Word(word);
-                                                Word insertedWord = wordRepository.save(databaseWord);
-                                                if (insertedWord != null) {
-                                                    logger.info(word + " inserted successfully  in database");
-                                                    logger.info("Inserting meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
-                                                    for(Meaning meaning : meanings){
-                                                        meaning.setWordId(insertedWord.getId());
-                                                        meaningRepository.save(meaning);
+                                if(word.matches("^[a-zA-Z]*$")){
+                                    System.out.println("Word is correct fetching meanings for "+word);
+                                    word = word.toLowerCase();
+                                    Word wordInDatabase = wordRepository.findByWord(word);
+                                    if (wordInDatabase != null) {
+                                        logger.info(wordInDatabase.getWord() + " is present in db. Fetching meaning from db");
+                                        List<Meaning> meaningList = meaningRepository.findByWordId(wordInDatabase.getId());
+                                        if(meaningList != null ){
+                                            logger.info("Found "+meaningList.size()+" for word: "+word+" in database");
+                                            logger.info("Calling dictionary service to send meaning to user");
+                                            dictionaryService.sendMeaning(payload,wordInDatabase,meaningList);
+                                        }
+                                    } else {
+                                        logger.info(word + " is not present in db. Fetching meaning from web");
+                                        RestTemplate restTemplate = new RestTemplate();
+                                        DictionaryResponse dictionaryResponse = restTemplate.getForObject(dictionaryUrl + word, DictionaryResponse.class);
+                                        logger.info("Recieved meaning from web..proceeding..");
+                                        if (dictionaryResponse != null) {
+                                            List<DictionaryTuc> tucs = dictionaryResponse.getTuc();
+                                            if (tucs != null && tucs.size() > 0) {
+                                                List<Meaning> meanings = null;
+                                                for(DictionaryTuc tuc : tucs){
+                                                    if(tuc.getMeanings() != null && tuc.getMeanings().size() > 0){
+                                                        logger.info("Found meaning from tuc..assigning & breaking");
+                                                        meanings = tuc.getMeanings();
+                                                        break;
                                                     }
-                                                    logger.info("Inserted meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
-                                                    logger.info("Calling dictionary service to send meaning to user");
-                                                    dictionaryService.sendMeaning(payload,insertedWord,meanings);
                                                 }
+                                                if (meanings != null && meanings.size() > 0) {
+                                                    logger.info("Recieved Meaning of word: " + word + " is not null inserting in database");
+                                                    Word databaseWord = new Word(word);
+                                                    Word insertedWord = wordRepository.save(databaseWord);
+                                                    if (insertedWord != null) {
+                                                        logger.info(word + " inserted successfully  in database");
+                                                        logger.info("Inserting meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
+                                                        for(Meaning meaning : meanings){
+                                                            meaning.setWordId(insertedWord.getId());
+                                                            meaningRepository.save(meaning);
+                                                        }
+                                                        logger.info("Inserted meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
+                                                        logger.info("Calling dictionary service to send meaning to user");
+                                                        dictionaryService.sendMeaning(payload,insertedWord,meanings);
+                                                    }
+                                                }else{
+                                                    String errorReply = "Sorry no meaning found for "+word+".\n Try Again with a new word!!";
+                                                    dictionaryService.sendErrorMessage(payload,errorReply);
+                                                }
+                                            }else{
+                                                String errorReply = "Sorry no meaning found for "+word+".\n Try Again with a new word!!";
+                                                dictionaryService.sendErrorMessage(payload,errorReply);
                                             }
                                         }
                                     }
+                                }else{
+                                    String errorReply = "Sorry I was not able to find meaning for "+word+".\n Try Again with correct word!!";
+                                    dictionaryService.sendErrorMessage(payload,errorReply);
                                 }
                             } else {
+                                String errorReply = "Sorry I was not able to find meaning for "+word;
+                                dictionaryService.sendErrorMessage(payload,errorReply);
                                 logger.info("Recieved word is null");
                             }
                         }
@@ -145,6 +166,8 @@ public class MeaningWorker implements Runnable {
                 }
             }
         } catch (Exception e) {
+            String errorReply = "Sorry I was not able to find meaning for. Try Again ! \n Try Sending just the 'word' for getting meaning";
+            dictionaryService.sendErrorMessage(payload,errorReply);
             logger.info("Exception in class: MeaningWorker");
             e.printStackTrace();
         }
