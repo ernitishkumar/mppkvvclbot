@@ -12,7 +12,7 @@ public class ReplyPayload implements Serializable {
      */
     private Sender recipient;
 
-    private Message message;
+    private ReplyMessage message;
 
     public Sender getRecipient() {
         return recipient;
@@ -22,18 +22,18 @@ public class ReplyPayload implements Serializable {
         this.recipient = recipient;
     }
 
-    public Message getMessage() {
+    public ReplyMessage getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(ReplyMessage message) {
         this.message = message;
     }
 
     public ReplyPayload() {
     }
 
-    public ReplyPayload(Sender recipient, Message message) {
+    public ReplyPayload(Sender recipient, ReplyMessage message) {
         this.recipient = recipient;
         this.message = message;
     }

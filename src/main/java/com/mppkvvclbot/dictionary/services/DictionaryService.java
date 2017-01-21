@@ -1,27 +1,27 @@
 package com.mppkvvclbot.dictionary.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mppkvvclbot.dictionary.beans.facebook.*;
 import com.mppkvvclbot.dictionary.beans.meaning.Meaning;
 import com.mppkvvclbot.dictionary.beans.mongo.Word;
 import com.mppkvvclbot.dictionary.repositories.MeaningRepository;
 import com.mppkvvclbot.dictionary.repositories.WordRepository;
 import com.mppkvvclbot.dictionary.workers.MeaningWorker;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.data.repository.init.ResourceReader.Type.JSON;
 
 /**
  * Created by NITISH on 19-01-2017.
@@ -68,17 +68,47 @@ public class DictionaryService{
                     reply = reply.substring(0,320);
                 }
                 logger.info("Sending Reply from meaning as: \n"+reply);
-                Message message = new Message();
-                message.setText(reply);
+                ReplyMessage message = new ReplyMessage();
+                message.setText("Hello World");
                 replyPayload.setMessage(message);
 
-                HttpHeaders headers = new HttpHeaders();
+                logger.info("Sending payload as: "+replyPayload);
+                ObjectMapper mapper = new ObjectMapper();
+                String json = "";
+                try {
+                    json = mapper.writeValueAsString(replyPayload);
+                    System.out.println(json);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                /*String url = REPLY_API+PAGE_ACCESS_TOKEN;
+                logger.info(url);
+*/
+                OkHttpClient client = new OkHttpClient();
+                try {
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(REPLY_API).newBuilder();
+                    urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
+                    String url = urlBuilder.build().toString();
+                    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
+                    logger.info("Sending body as");
+                    logger.info(""+body.contentLength());
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    logger.info(response.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                /*HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-
-                HttpEntity<ReplyPayload> httpEntity = new HttpEntity<ReplyPayload>(replyPayload);
-
+                HttpEntity<String> postEntity = new HttpEntity<String>(json, headers);
                 RestTemplate restTemplate = new RestTemplate();
-                restTemplate.postForObject(REPLY_API+PAGE_ACCESS_TOKEN,httpEntity,ReplyPayload.class);
+                URI uri = URI.create(REPLY_API+PAGE_ACCESS_TOKEN);
+                //URI uri = URI.create("http://localhost:8080/dwls/backend/test");
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST,postEntity,String.class);
+                //restTemplate.postForLocation(uri,postEntity);*/
             }
 
         }
