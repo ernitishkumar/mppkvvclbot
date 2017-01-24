@@ -87,8 +87,6 @@ public class DictionaryService{
                     urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
                     String url = urlBuilder.build().toString();
                     RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
-                    logger.info("Sending body as");
-                    logger.info(""+body.contentLength());
                     Request request = new Request.Builder()
                             .url(url)
                             .post(body)
@@ -154,7 +152,7 @@ public class DictionaryService{
             logger.info("Forming Single Text Reply from meanings on Thread: "+Thread.currentThread().getName());
             StringBuffer stringBuffer = new StringBuffer();
             int counter = 1;
-            stringBuffer.append("Meanings of word: "+word+" are:");
+            stringBuffer.append(word+" means :");
             stringBuffer.append(System.lineSeparator());
             for(Meaning meaning : meanings){
                 stringBuffer.append(counter+++". ");
