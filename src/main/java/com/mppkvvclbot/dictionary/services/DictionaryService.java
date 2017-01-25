@@ -73,12 +73,12 @@ public class DictionaryService{
                 ReplyMessage message = new ReplyMessage();
                 message.setText(reply);
                 replyPayload.setMessage(message);
-                logger.info("Sending payload as: "+replyPayload);
+                //logger.info("Sending payload as: "+replyPayload);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = "";
                 try {
                     json = mapper.writeValueAsString(replyPayload);
-                    System.out.println(json);
+                   // System.out.println(json);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -115,12 +115,12 @@ public class DictionaryService{
                 ReplyMessage message = new ReplyMessage();
                 message.setText(reply);
                 replyPayload.setMessage(message);
-                logger.info("Sending payload as: "+replyPayload);
+                //logger.info("Sending payload as: "+replyPayload);
                 ObjectMapper mapper = new ObjectMapper();
                 String json = "";
                 try {
                     json = mapper.writeValueAsString(replyPayload);
-                    System.out.println(json);
+                    //System.out.println(json);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -129,8 +129,8 @@ public class DictionaryService{
                     urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
                     String url = urlBuilder.build().toString();
                     RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
-                    logger.info("Sending body as");
-                    logger.info(""+body.contentLength());
+                    /*logger.info("Sending body as");
+                    logger.info(""+body.contentLength());*/
                     Request request = new Request.Builder()
                             .url(url)
                             .post(body)
