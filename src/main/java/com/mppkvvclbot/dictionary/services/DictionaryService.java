@@ -69,7 +69,7 @@ public class DictionaryService{
                     logger.info("Reply length is greater than 320.Trimming to 320 :( ");
                     reply = reply.substring(0,320);
                 }
-                logger.info("Sending Reply from meaning as: \n"+reply);
+                //logger.info("Sending Reply from meaning as: \n"+reply);
                 ReplyMessage message = new ReplyMessage();
                 message.setText(reply);
                 replyPayload.setMessage(message);
