@@ -61,4 +61,12 @@ public class WebhookController {
         dictionaryService.fetchMeaning(payload);
         return new ResponseEntity("Message Delivered",HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/webhook/test",method = RequestMethod.POST,consumes = "application/json")
+    @ResponseBody
+    public ResponseEntity testRecieveMessage(@RequestBody Payload payload){
+        logger.info("POST Test Webhook started by facebook");
+        dictionaryService.fetchMeaningForTest(payload);
+        return new ResponseEntity("Message Delivered",HttpStatus.OK);
+    }
 }

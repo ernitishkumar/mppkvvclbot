@@ -57,6 +57,15 @@ public class DictionaryService{
         logger.info("Worker thread started successfully sending response to facebook..");
     }
 
+    public void fetchMeaningForTest(Payload payload){
+        logger.info("Queuing payload for test");
+        MeaningWorker meaningWorker = new MeaningWorker(this,wordRepository,meaningRepository,payload,DICTIONARY_API);
+        logger.info("Starting new worker thread for test dictionary task");
+        Thread thread = new Thread(meaningWorker);
+        thread.start();
+        logger.info("Test Worker thread started successfully sending response to facebook..");
+    }
+
     public void sendMeaning(Payload payload,Word word,List<Meaning> meanings){
         logger.info("Sending Meaning to user");
         if(payload != null && word != null && meanings != null){
@@ -96,6 +105,7 @@ public class DictionaryService{
                     logger.info(response.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
+                    logger.info("Unable to reply to facebook. Maybe test !!");
                 }
             }
         }
@@ -140,6 +150,7 @@ public class DictionaryService{
                     logger.info(response.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
+                    logger.info("Unable to reply error to facebook. Maybe test !!");
                 }
             }
 
