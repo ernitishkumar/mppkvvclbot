@@ -82,31 +82,10 @@ public class DictionaryService{
                 ReplyMessage message = new ReplyMessage();
                 message.setText(reply);
                 replyPayload.setMessage(message);
-                //logger.info("Sending payload as: "+replyPayload);
-                ObjectMapper mapper = new ObjectMapper();
-                String json = "";
-                try {
-                    json = mapper.writeValueAsString(replyPayload);
-                   // System.out.println(json);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse(REPLY_API).newBuilder();
-                    urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
-                    String url = urlBuilder.build().toString();
-                    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(body)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    response.close();
-                    logger.info(response.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    logger.info("Unable to reply to facebook. Maybe test !!");
-                }
+
+                //Calling reply method to finally send the reply to
+                // user.
+                reply(replyPayload);
             }
         }
     }
@@ -173,5 +152,33 @@ public class DictionaryService{
             reply = stringBuffer.toString().trim();
         }
         return reply;
+    }
+
+    public void reply(ReplyPayload replyPayload){
+        //logger.info("Sending payload as: "+replyPayload);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "";
+        try {
+            json = mapper.writeValueAsString(replyPayload);
+            // System.out.println(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        try {
+            HttpUrl.Builder urlBuilder = HttpUrl.parse(REPLY_API).newBuilder();
+            urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
+            String url = urlBuilder.build().toString();
+            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            response.close();
+            logger.info(response.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.info("Unable to reply to facebook. Maybe test !!");
+        }
     }
 }
