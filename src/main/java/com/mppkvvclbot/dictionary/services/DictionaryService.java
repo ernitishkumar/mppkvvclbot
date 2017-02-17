@@ -209,7 +209,7 @@ public class DictionaryService{
         List<String> replies = new ArrayList<>();
         int startIndex = 0;
         int endIndex = 320;
-        while(startIndex >= reply.length()){
+        while(startIndex <= reply.length()){
             try {
                 String temp = reply.substring(startIndex, endIndex);
                 replies.add(temp);
