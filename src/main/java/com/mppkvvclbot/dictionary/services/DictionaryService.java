@@ -85,6 +85,7 @@ public class DictionaryService{
 
                 //Calling reply method to finally send the reply to
                 // user.
+                logger.info("Calling reply method to finally send the reply");
                 reply(replyPayload);
             }
         }
@@ -104,8 +105,10 @@ public class DictionaryService{
                 ReplyMessage message = new ReplyMessage();
                 message.setText(reply);
                 replyPayload.setMessage(message);
+                logger.info("Sending Error message using reply method");
+                reply(replyPayload);
                 //logger.info("Sending payload as: "+replyPayload);
-                ObjectMapper mapper = new ObjectMapper();
+                /*ObjectMapper mapper = new ObjectMapper();
                 String json = "";
                 try {
                     json = mapper.writeValueAsString(replyPayload);
@@ -118,8 +121,8 @@ public class DictionaryService{
                     urlBuilder.addQueryParameter("access_token", PAGE_ACCESS_TOKEN);
                     String url = urlBuilder.build().toString();
                     RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),json);
-                    /*logger.info("Sending body as");
-                    logger.info(""+body.contentLength());*/
+                    *//*logger.info("Sending body as");
+                    logger.info(""+body.contentLength());*//*
                     Request request = new Request.Builder()
                             .url(url)
                             .post(body)
@@ -130,7 +133,7 @@ public class DictionaryService{
                 } catch (IOException e) {
                     e.printStackTrace();
                     logger.info("Unable to reply error to facebook. Maybe test !!");
-                }
+                }*/
             }
 
         }
@@ -155,7 +158,7 @@ public class DictionaryService{
     }
 
     public void reply(ReplyPayload replyPayload){
-        //logger.info("Sending payload as: "+replyPayload);
+        logger.info("Inside reply method ");
         ObjectMapper mapper = new ObjectMapper();
         String json = "";
         try {
