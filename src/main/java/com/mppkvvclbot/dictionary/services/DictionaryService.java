@@ -76,17 +76,34 @@ public class DictionaryService{
                 String reply = getReplyText(meanings,word.getWord());
                 if(reply.length() > 320){
                     logger.info("Reply length is greater than 320.Trimming to 320 :( ");
-                    reply = reply.substring(0,320);
-                }
-                //logger.info("Sending Reply from meaning as: \n"+reply);
-                ReplyMessage message = new ReplyMessage();
-                message.setText(reply);
-                replyPayload.setMessage(message);
 
-                //Calling reply method to finally send the reply to
-                // user.
-                logger.info("Calling reply method to finally send the reply");
-                reply(replyPayload);
+                    // Splitting reply in parts and sending all the parts.
+                    String firtReply = reply.substring(0,320);
+                    ReplyMessage firstMessage = new ReplyMessage();
+                    firstMessage.setText(firtReply);
+                    replyPayload.setMessage(firstMessage);
+                    logger.info("Calling reply method to finally send the first reply");
+                    reply(replyPayload);
+
+                    String secondReply = reply.substring(320);
+                    if(secondReply != null && secondReply.length() <= 320){
+                        ReplyMessage secondMessage = new ReplyMessage();
+                        secondMessage.setText(secondReply);
+                        replyPayload.setMessage(secondMessage);
+                        logger.info("Calling reply method to finally send the second reply");
+                        reply(replyPayload);
+                    }else{
+                        logger.info("Second reply length is greater than 320. Not Sending");
+                    }
+                }else {
+                    logger.info("Reply length is less than 320");
+                    ReplyMessage message = new ReplyMessage();
+                    message.setText(reply);
+                    replyPayload.setMessage(message);
+                    //Calling reply method to finally send the reply to user
+                    logger.info("Calling reply method to finally send the reply");
+                    reply(replyPayload);
+                }
             }
         }
     }
