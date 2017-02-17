@@ -80,7 +80,7 @@ public class DictionaryService{
                     List<String> replies = makeReplies(reply);
                     int i = 1;
                     if(replies != null && replies.size() > 0){
-                        logger.info("Successfully made replies. Looping now...");
+                        logger.info("Successfully made "+replies.size()+" replies. Looping now...");
                         for(String r : replies){
                             ReplyMessage message = new ReplyMessage();
                             message.setText(r);
