@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.data.repository.init.ResourceReader.Type.JSON;
@@ -76,24 +77,26 @@ public class DictionaryService{
                 String reply = getReplyText(meanings,word.getWord());
                 if(reply.length() > 320){
                     logger.info("Reply length is greater than 320.Trimming to 320 :( ");
-
-                    // Splitting reply in parts and sending all the parts.
-                    String firtReply = reply.substring(0,320);
-                    ReplyMessage firstMessage = new ReplyMessage();
-                    firstMessage.setText(firtReply);
-                    replyPayload.setMessage(firstMessage);
-                    logger.info("Calling reply method to finally send the first reply");
-                    reply(replyPayload);
-
-                    String secondReply = reply.substring(320);
-                    if(secondReply != null && secondReply.length() <= 320){
-                        ReplyMessage secondMessage = new ReplyMessage();
-                        secondMessage.setText(secondReply);
-                        replyPayload.setMessage(secondMessage);
-                        logger.info("Calling reply method to finally send the second reply");
-                        reply(replyPayload);
+                    List<String> replies = makeReplies(reply);
+                    int i = 1;
+                    if(replies != null && replies.size() > 0){
+                        logger.info("Successfully made replies. Looping now...");
+                        for(String r : replies){
+                            ReplyMessage message = new ReplyMessage();
+                            message.setText(r);
+                            replyPayload.setMessage(message);
+                            logger.info("Calling reply method to finally send the "+ (i++) +" reply");
+                            reply(replyPayload);
+                        }
                     }else{
-                        logger.info("Second reply length is greater than 320. Not Sending");
+                        logger.info("Something went wrong while making replies. Sending the first chunk only");
+                        // Splitting reply in parts and sending all the parts.
+                        String firtReply = reply.substring(0,320);
+                        ReplyMessage firstMessage = new ReplyMessage();
+                        firstMessage.setText(firtReply);
+                        replyPayload.setMessage(firstMessage);
+                        logger.info("Calling reply method to finally send the first reply after failing in making replies");
+                        reply(replyPayload);
                     }
                 }else {
                     logger.info("Reply length is less than 320");
@@ -200,5 +203,24 @@ public class DictionaryService{
             e.printStackTrace();
             logger.info("Unable to reply to facebook. Maybe test !!");
         }
+    }
+
+    public List<String> makeReplies(String reply){
+        List<String> replies = new ArrayList<>();
+        int startIndex = 0;
+        int endIndex = 320;
+        while(startIndex >= reply.length()){
+            try {
+                String temp = reply.substring(startIndex, endIndex);
+                replies.add(temp);
+                startIndex = endIndex;
+                endIndex = endIndex + 320;
+            }catch (IndexOutOfBoundsException ioobe){
+                logger.info("Index out of bound exception while making reply for start "+startIndex+" end "+endIndex+" string length: "+reply.length());
+                replies.add(reply.substring(startIndex));
+                break;
+            }
+        }
+        return replies;
     }
 }
