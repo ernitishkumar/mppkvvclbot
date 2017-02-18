@@ -87,6 +87,10 @@ public class DictionaryService{
                             replyPayload.setMessage(message);
                             logger.info("Calling reply method to finally send the "+ (i++) +" reply");
                             reply(replyPayload);
+                            if(i == 3){
+                                logger.info("Breaking replying after second reply");
+                                break;
+                            }
                         }
                     }else{
                         logger.info("Something went wrong while making replies. Sending the first chunk only");
