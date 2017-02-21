@@ -5,11 +5,11 @@
 
 	<groupId>com.mppkvvclbot</groupId>
 	<artifactId>mppkvvclbot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>mppkvvclbot</name>
-	<description>RAPDRP Online bill fetching project.</description>
+	<description>An Online Facebook based Dictionary Bot</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
