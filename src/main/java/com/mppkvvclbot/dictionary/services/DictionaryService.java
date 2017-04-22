@@ -176,6 +176,7 @@ public class DictionaryService{
                 String text = meaning.getText().trim().replaceAll("<i>","").replaceAll("</i>","")
                         .replaceAll("<b>","").replaceAll("</b>","")
                         .replaceAll("&#39;","'")
+                        .replaceAll("&quot;","'")
                         .replaceAll("\\[i\\]","").replaceAll("\\[/i\\]","").trim();
                 stringBuffer.append(text);
                 stringBuffer.append(System.lineSeparator());
