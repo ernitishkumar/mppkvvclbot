@@ -172,8 +172,9 @@ public class DictionaryService{
             stringBuffer.append(word+" means :");
             stringBuffer.append(System.lineSeparator());
             for(Meaning meaning : meanings){
-                stringBuffer.append(counter+++". ");
-                stringBuffer.append(meaning.getText().trim());
+                stringBuffer.append(counter++ + ". ");
+                String text = meaning.getText().trim().replaceAll("<i>","").replaceAll("</i>","").replaceAll("[i]","").replaceAll("[/i]","").trim();
+                stringBuffer.append(text);
                 stringBuffer.append(System.lineSeparator());
             }
             reply = stringBuffer.toString().trim();
