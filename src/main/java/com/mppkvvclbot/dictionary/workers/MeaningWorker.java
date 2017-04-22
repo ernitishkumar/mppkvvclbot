@@ -136,7 +136,11 @@ public class MeaningWorker implements Runnable {
                                                         logger.info("Inserting meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
                                                         for(Meaning meaning : meanings){
                                                             meaning.setWordId(insertedWord.getId());
-                                                            meaningRepository.save(meaning);
+                                                            if(meaning != null){
+                                                                String text = meaning.getText().trim().replaceAll("<i>","").replaceAll("</i>","").replaceAll("\\[i\\]","").replaceAll("\\[/i\\]","").trim();
+                                                                meaning.setText(text);
+                                                                meaningRepository.save(meaning);
+                                                            }
                                                         }
                                                         logger.info("Inserted meanings for word: " + insertedWord.getWord() + " with id: " + insertedWord.getId()+" in db.");
                                                         logger.info("Calling dictionary service to send meaning to user");
