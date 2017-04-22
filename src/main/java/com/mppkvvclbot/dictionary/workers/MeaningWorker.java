@@ -137,7 +137,9 @@ public class MeaningWorker implements Runnable {
                                                         for(Meaning meaning : meanings){
                                                             meaning.setWordId(insertedWord.getId());
                                                             if(meaning != null){
-                                                                String text = meaning.getText().trim().replaceAll("<i>","").replaceAll("</i>","").replaceAll("\\[i\\]","").replaceAll("\\[/i\\]","").trim();
+                                                                String text = meaning.getText().trim().replaceAll("<i>","").replaceAll("</i>","")
+                                                                        .replaceAll("<b>","").replaceAll("</b>","")
+                                                                        .replaceAll("\\[i\\]","").replaceAll("\\[/i\\]","").trim();
                                                                 meaning.setText(text);
                                                                 meaningRepository.save(meaning);
                                                             }
